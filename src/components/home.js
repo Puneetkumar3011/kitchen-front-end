@@ -1,7 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import io from "socket.io-client";
+import styled from "styled-components";
 
 import DisplayGrid from "./displayGrid";
+import OrderSearch from './orderSearch';
+
+const HomeWrapper = styled.div`
+  & .separator {
+      height: 1rem;
+  }
+`;
 
 const socket = io('http://localhost:4000', {
     transports: ['websocket', 'polling']
@@ -24,9 +32,11 @@ const Home = () => {
     }
 
     return (
-        <div>
+        <HomeWrapper>
+            <OrderSearch orders={orders} />
+            <div className='separator'>&nbsp;</div>
            <DisplayGrid orders={orders} />
-        </div>
+        </HomeWrapper>
     );
 }
 
