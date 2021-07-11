@@ -24,20 +24,22 @@ const OrderSearch = (props) => {
     const { suggestions } = search;
 
     useEffect(() => {
-        if(props.orders && props.orders.length) {
+        if(props.orders) {
             const values = Object.values(props.orders);
             setData(values);
+            if(isComponentVisible) {
+                onTextChanged(search.text);
+            }
         }
     }, [props.orders]);
 
-    const onTextChanged = (e) => {
-        const value = e.target.value;
+    const onTextChanged = (value) => {
         let suggestions = [];
         if (value.length > 0) {
-        const newData = Object.values(props.orders);
-          suggestions = newData.filter((order) => { 
-              order.price = order.price + '';
-              return order.price.indexOf(value) > -1;
+          suggestions = data.filter((order) => { 
+            order.price = order.price + '';
+            return order.price.indexOf(value) > -1;
+            // return order.price === value;
         });
         }
         setIsComponentVisible(true);
@@ -72,7 +74,7 @@ const OrderSearch = (props) => {
                 id="input"
                 autoComplete="off"
                 value={search.text}
-                onChange={onTextChanged}
+                onChange={(e) => onTextChanged(e.target.value)}
                 type={"text"}
                 />
                 <AutoCompleteIcon isOpen={isComponentVisible}>

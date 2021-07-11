@@ -79,32 +79,33 @@ const DisplayGrid = (props) => {
     const orderKeyIds = Object.keys(orders);
 
     const getOrderId = (order) => {
+        if(!order || !order.id) return '';
         return order.id + order.customer.trim() + order.item.trim() + order.price + order.event_name.trim();
     }
 
     return (<WrapperDiv>
         <div className='tableFixHead'>
             <table>
-                    <thead>
-                        <tr>
-                            <th className='regular-customer'>Customer</th>
-                            <th className='regular-item'>Item</th> 
-                            <th className='regular-cells'>Price</th>
-                            <th className='regular-cells'>Status</th>
-                            <th>Destination</th>
-                        </tr>  
-                    </thead>
-                    <tbody>
-                    {orderKeyIds && orderKeyIds.length && orderKeyIds.map((id) =>(
-                        <tr key={getOrderId(orders[id])}>
-                            <td className='regular-customer'>{orders[id].customer}</td>
-                            <td className='regular-item'>{orders[id].item}</td>
-                            <td className='regular-cells'>{orders[id].price}</td>
-                            <td className='regular-cells'>{orders[id].event_name}</td>
-                            <td className='destination'>{orders[id].destination}</td>
-                        </tr>
-                    ))}
-                    </tbody>
+                <thead>
+                    <tr>
+                        <th className='regular-customer'>Customer</th>
+                        <th className='regular-item'>Item</th> 
+                        <th className='regular-cells'>Price</th>
+                        <th className='regular-cells'>Status</th>
+                        <th>Destination</th>
+                    </tr>  
+                </thead>
+                <tbody>
+                {orderKeyIds && orderKeyIds.length && orderKeyIds.map((id) =>(
+                    <tr key={getOrderId(orders[id])}>
+                        <td className='regular-customer'>{orders[id].customer}</td>
+                        <td className='regular-item'>{orders[id].item}</td>
+                        <td className='regular-cells'>{orders[id].price}</td>
+                        <td className='regular-cells'>{orders[id].event_name}</td>
+                        <td className='destination'>{orders[id].destination}</td>
+                    </tr>
+                ))}
+                </tbody>
             </table>
         </div>
     </WrapperDiv>);

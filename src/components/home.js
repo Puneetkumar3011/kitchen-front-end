@@ -6,6 +6,10 @@ import DisplayGrid from "./displayGrid";
 import OrderSearch from './orderSearch';
 
 const HomeWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    
   & .separator {
       height: 1rem;
   }
@@ -17,23 +21,32 @@ const socket = io('http://localhost:4000', {
 
 const Home = () => {
     const [orders, setOrders] = useState([]);
+    const [seachTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         socket.on('order_event', (eventData) => {
             setOrders(currOrders => {
-                return updateData(eventData);
+                const updatedData = getUpdateData(eventData, 'id');
+                return updatedData;
             });
         });
     }, []);
 
-    const updateData = (orderRequests) => {
-        const result = orderRequests.reduce((acc, it) => (acc[it.id] = it, acc), {});
-        return result;
+    const getUpdateData = (objectArray, property) => {
+        return objectArray.reduce((acc, obj) => {
+            let key = obj[property];
+            acc[key] = obj;
+            return acc;
+        }, {});
+    }
+
+    const onOrderSeach = (term) => {
+        setSearchTerm(term);
     }
 
     return (
         <HomeWrapper>
-            <OrderSearch orders={orders} />
+            <OrderSearch orders={orders} onSeachClick={onOrderSeach} />
             <div className='separator'>&nbsp;</div>
            <DisplayGrid orders={orders} />
         </HomeWrapper>
