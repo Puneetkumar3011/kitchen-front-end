@@ -6,12 +6,14 @@ const WrapperDiv = styled.div`
         width:100%;
     }
     table, th, td {
-        border: 1px solid black;
         border-collapse: collapse;
     }
     th, td {
         padding: 15px;
         text-align: left;
+    }
+    tr{
+        border-bottom: 1px solid black;
     }
     tr:nth-child(even) {
         background-color: #eee;
@@ -28,30 +30,6 @@ const WrapperDiv = styled.div`
         white-space: nowrap;
         overflow: hidden;
     }
-
-
-  & .order-main{
-      display: flex;
-      margin: 1rem;
-      max-width: 1080px;
-    & .cutomer{
-          width: 15%;
-    }
-    & .item{
-        width: 15%;
-    }
-    & .price{
-        width: 15%;
-    }
-    & .event_name{
-        width: 15%;
-    }
-    & .destination{
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-    }
-  }
 `;
 
 const orders1 = [
@@ -77,25 +55,32 @@ const orders1 = [
 
 const DisplayGrid = (props) => {
     const {orders} = props;
+    const orderKeyIds = Object.keys(orders);
+
+    const getOrderId = (order) => {
+        return order.id + order.customer.trim() + order.item.trim() + order.price + order.event_name.trim();
+    }
 
     return (<WrapperDiv>
         <table>
-            <tr>
-                <th>Customer</th>
-                <th>Item</th> 
-                <th>Price</th>
-                <th>Status</th>
-                <th>Destination</th>
-            </tr>
-            {orders && orders.length && orders.map((order) =>(
-                <tr key={order.id}>
-                    <td>{order.customer}</td>
-                    <td>{order.item}</td>
-                    <td>{order.price}</td>
-                    <td>{order.event_name}</td>
-                    <td className='destination'>{order.destination}</td>
+            <tbody>
+                <tr>
+                    <th>Customer</th>
+                    <th>Item</th> 
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Destination</th>
+                </tr>
+            {orderKeyIds && orderKeyIds.length && orderKeyIds.map((id) =>(
+                <tr key={getOrderId(orders[id])}>
+                    <td>{orders[id].customer}</td>
+                    <td>{orders[id].item}</td>
+                    <td>{orders[id].price}</td>
+                    <td>{orders[id].event_name}</td>
+                    <td className='destination'>{orders[id].destination}</td>
                 </tr>
             ))}
+            </tbody>
        </table>
 
     </WrapperDiv>);

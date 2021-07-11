@@ -13,11 +13,15 @@ const Home = () => {
     useEffect(() => {
         socket.on('order_event', (eventData) => {
             setOrders(currOrders => {
-                const totalOrders = [...currOrders, ...eventData];
-                return totalOrders;
+                return updateData(eventData);
             });
         });
     }, []);
+
+    const updateData = (orderRequests) => {
+        const result = orderRequests.reduce((acc, it) => (acc[it.id] = it, acc), {});
+        return result;
+    }
 
     return (
         <div>
