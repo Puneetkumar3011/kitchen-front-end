@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import io from "socket.io-client";
+import { connect } from "react-redux";
+import socketClient from "socket.io-client";
 import styled from "styled-components";
 
 import DisplayGrid from "./displayGrid";
@@ -15,42 +16,55 @@ const HomeWrapper = styled.div`
   }
 `;
 
-const socket = io('http://localhost:4000', {
+const socket = socketClient('http://localhost:4000', {
     transports: ['websocket', 'polling']
 });
 
-const Home = () => {
-    const [orders, setOrders] = useState([]);
-    const [seachTerm, setSearchTerm] = useState('');
+const Home = (props) => {
+    const [orders, setOrders] = useState({});
 
     useEffect(() => {
         socket.on('order_event', (eventData) => {
             setOrders(currOrders => {
-                const updatedData = getUpdateData(eventData, 'id');
+                const updatedData = getUpdateData(currOrders, eventData, 'id');
                 return updatedData;
             });
         });
     }, []);
 
-    const getUpdateData = (objectArray, property) => {
-        return objectArray.reduce((acc, obj) => {
+    const getUpdateData = (currOrders, eventData, property) => {
+        let output;
+        
+        /* modify incmoing orders */
+        const incomingOrder = eventData.reduce((acc, obj) => {
             let key = obj[property];
             acc[key] = obj;
             return acc;
         }, {});
-    }
 
-    const onOrderSeach = (term) => {
-        setSearchTerm(term);
+        /** copy all existing orders to output array */
+        output = {...currOrders};
+
+        /** include incoming orders */
+        const keys = Object.keys(incomingOrder);
+        keys.forEach(key => {
+            output[key] = incomingOrder[key];
+        });
+
+        return output;
     }
 
     return (
         <HomeWrapper>
-            <OrderSearch orders={orders} onSeachClick={onOrderSeach} />
+            <OrderSearch orders={orders} />
             <div className='separator'>&nbsp;</div>
            <DisplayGrid orders={orders} />
         </HomeWrapper>
     );
 }
 
-export default Home;
+const mapStateToProps = state => ({
+    priceSearch: state.search
+});
+
+export default connect(mapStateToProps)(Home);

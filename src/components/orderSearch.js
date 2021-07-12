@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from "react";
+import { connect } from 'react-redux';
 import styled from "styled-components";
+import { updateSearchTerm } from "../store/actions/appActions";
 
 import {
     AutoCompleteContainer,
@@ -36,11 +38,13 @@ const OrderSearch = (props) => {
     const onTextChanged = (value) => {
         let suggestions = [];
         if (value.length > 0) {
-          suggestions = data.filter((order) => { 
-            order.price = order.price + '';
-            return order.price.indexOf(value) > -1;
-            // return order.price === value;
-        });
+            suggestions = data.filter((order) => { 
+                order.price = order.price + '';
+                return order.price.indexOf(value) > -1;
+                // return order.price === value;
+            });
+        } else {
+            props.updateSearchTerm({});
         }
         setIsComponentVisible(true);
         setSearch({ suggestions, text: value });
@@ -52,6 +56,7 @@ const OrderSearch = (props) => {
           text: value.customer,
           suggestions: []
         });
+        props.updateSearchTerm(value);
       };
 
     return (
@@ -98,4 +103,8 @@ const OrderSearch = (props) => {
     );
 }
 
-export default OrderSearch;
+const mapStateToProps = state => ({
+    ordersTest: state.orders
+});
+
+export default connect(mapStateToProps, { updateSearchTerm })(OrderSearch);

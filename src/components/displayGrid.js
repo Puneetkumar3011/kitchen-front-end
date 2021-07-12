@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
 import styled from 'styled-components'
 
 const WrapperDiv = styled.div`
@@ -52,35 +53,36 @@ const WrapperDiv = styled.div`
     }
 `;
 
-const orders1 = {
-    d0791ce1: {
-        "customer": "Carla Garner",
-        "destination": "61109 Alan Motorway, North Corey, CA 92789",
-        "event_name": "COOKED",
-        "id": "d0791ce1",
-        "item": "Caesar salad",
-        "price": 4692,
-        "sent_at_second": 13
-    },
-    d0791ce2: {
-        "customer": "Carla Garner",
-        "destination": "61109 Alan Motorway, North Corey, CA 92789",
-        "event_name": "DRIVER_RECEIVED",
-        "id": "d0791ce2",
-        "item": "Caesar salad",
-        "price": 4692,
-        "sent_at_second": 18
-    }
-}
-;
+let priceSearch;
 
 const DisplayGrid = (props) => {
     const {orders} = props;
     const orderKeyIds = Object.keys(orders);
 
+    useEffect(() => {
+        console.log(props.priceSearch);
+        priceSearch = props.priceSearch.searchPrice;
+    }, [props.priceSearch]);
+
     const getOrderId = (order) => {
-        if(!order || !order.id) return '';
         return order.id + order.customer.trim() + order.item.trim() + order.price + order.event_name.trim();
+    }
+
+    const getDataRows = (orderKeyIds) => {
+        if(orderKeyIds && orderKeyIds.length) {
+            return orderKeyIds.map((id) =>(
+                (!priceSearch || orders[id].price == priceSearch) &&
+                    <tr key={getOrderId(orders[id])}>
+                        <td className='regular-customer'>{orders[id].customer}</td>
+                        <td className='regular-item'>{orders[id].item}</td>
+                        <td className='regular-cells'>{orders[id].price}</td>
+                        <td className='regular-cells'>{orders[id].event_name}</td>
+                        <td className='destination'>{orders[id].destination}</td>
+                    </tr>
+            ));
+        } else {
+            return null;
+        }
     }
 
     return (<WrapperDiv>
@@ -96,19 +98,15 @@ const DisplayGrid = (props) => {
                     </tr>  
                 </thead>
                 <tbody>
-                {orderKeyIds && orderKeyIds.length && orderKeyIds.map((id) =>(
-                    <tr key={getOrderId(orders[id])}>
-                        <td className='regular-customer'>{orders[id].customer}</td>
-                        <td className='regular-item'>{orders[id].item}</td>
-                        <td className='regular-cells'>{orders[id].price}</td>
-                        <td className='regular-cells'>{orders[id].event_name}</td>
-                        <td className='destination'>{orders[id].destination}</td>
-                    </tr>
-                ))}
+                    {getDataRows(orderKeyIds)}
                 </tbody>
             </table>
         </div>
     </WrapperDiv>);
 }
 
-export default DisplayGrid;
+const mapStateToProps = state => ({
+    priceSearch: state.search
+});
+
+export default connect(mapStateToProps)(DisplayGrid);
